@@ -868,8 +868,8 @@ function renderAdminOverview(){
   const totalMargin=totalSales>0?(totalGP/totalSales)*100:0;
 
   let html=`<div class="ph"><div><h1>All Departments Overview</h1><div class="sub">Combined YTD performance across ${deps.length} departments</div></div>
-    ${!session.isSuperuser ? '<button class="btn admin-btn" onclick="showPage('admin_depts')">🏢 Manage Depts</button>' : ''}
-    ${!session.isSuperuser ? `<button class="btn" style="background:#e0f2f1;color:#00695c;border-color:#00897b" onclick="openSuperuserPinModal()">🔑 Change Superuser PIN</button>` : ''}
+    ${!session.isSuperuser ? '<button class="btn admin-btn" onclick="showPage(\'admin_depts\')">🏢 Manage Depts</button>' : ''}
+    ${!session.isSuperuser ? '<button class="btn" style="background:#e0f2f1;color:#00695c;border-color:#00897b" onclick="openSuperuserPinModal()">🔑 Change Superuser PIN</button>' : ''}
   </div>
   ${session.isSuperuser
     ? '<div class="superuser-badge">👁 Superuser — Read-Only View</div>'
@@ -1391,7 +1391,29 @@ function init(){
     </div>`;
     return;
   }
+  // Set a timeout — if Firebase doesn't respond in 8 seconds show error
+  const connTimeout = setTimeout(()=>{
+    document.getElementById('loadingOverlay').innerHTML=`
+      <div style="background:#fff;border-radius:12px;padding:28px;max-width:480px;text-align:center">
+        <div style="font-size:28px;margin-bottom:10px">⚠️</div>
+        <h2 style="font-size:16px;color:#202124;margin-bottom:10px">Cannot Connect to Database</h2>
+        <p style="font-size:13px;color:#5f6368;line-height:1.7;margin-bottom:14px">The app is unable to reach Firebase. This is usually a database rules issue.</p>
+        <div style="background:#f8f9fa;border-radius:8px;padding:14px;text-align:left;font-size:12px;color:#202124;line-height:2">
+          <strong>Fix — Go to Firebase Console:</strong><br>
+          1. Go to <a href="https://console.firebase.google.com" target="_blank" style="color:#1a73e8">console.firebase.google.com</a><br>
+          2. Select <strong>StoreBackroom</strong> project<br>
+          3. Click <strong>Realtime Database</strong> → <strong>Rules</strong> tab<br>
+          4. Make sure rules say:<br>
+          <code style="background:#e8f0fe;padding:4px 8px;border-radius:4px;display:block;margin:4px 0">{ "rules": { ".read": true, ".write": true } }</code>
+          5. Click <strong>Publish</strong><br>
+          6. Refresh this page
+        </div>
+        <button onclick="location.reload()" style="margin-top:16px;padding:10px 20px;background:#1a73e8;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer">🔄 Retry Connection</button>
+      </div>`;
+  }, 8000);
+
   loadDepts(()=>{
+    clearTimeout(connTimeout);
     document.getElementById('loadingOverlay').style.display='none';
     document.getElementById('loginScreen').style.display='flex';
   });
