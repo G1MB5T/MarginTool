@@ -844,6 +844,13 @@ function viewAsDept(deptId){
 // ══════════════════════════════════════════════════════════
 // ADMIN OVERVIEW
 // ══════════════════════════════════════════════════════════
+function navBtn_manageDepts(){
+  return '<button class="btn admin-btn" onclick="showPage('admin_depts')">🏢 Manage Depts</button>';
+}
+function navBtn_superuserPin(){
+  return '<button class="btn" style="background:#e0f2f1;color:#00695c;border-color:#00897b" onclick="openSuperuserPinModal()">🔑 Change Superuser PIN</button>';
+}
+
 function renderAdminOverview(){
   const c = document.getElementById('pg_admin_overview'); if(!c) return;
   const deps = Object.entries(allDepts);
@@ -868,8 +875,8 @@ function renderAdminOverview(){
   const totalMargin=totalSales>0?(totalGP/totalSales)*100:0;
 
   let html=`<div class="ph"><div><h1>All Departments Overview</h1><div class="sub">Combined YTD performance across ${deps.length} departments</div></div>
-    ${!session.isSuperuser ? '<button class="btn admin-btn" onclick="showPage(\'admin_depts\')">🏢 Manage Depts</button>' : ''}
-    ${!session.isSuperuser ? '<button class="btn" style="background:#e0f2f1;color:#00695c;border-color:#00897b" onclick="openSuperuserPinModal()">🔑 Change Superuser PIN</button>' : ''}
+    ${!session.isSuperuser ? navBtn_manageDepts() : ''}
+    ${!session.isSuperuser ? navBtn_superuserPin() : ''}
   </div>
   ${session.isSuperuser
     ? '<div class="superuser-badge">👁 Superuser — Read-Only View</div>'
